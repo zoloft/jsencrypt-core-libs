@@ -134,7 +134,7 @@ var bnpFromNumberAsync = function (a,b,c,callback) {
         if(bnp.isProbablePrime(b)) {
             setTimeout(function(){callback()},0); // escape
         } else {
-            setTimeout(bnpfn1,0);
+            bnpfn1();
         }
       };
       setTimeout(bnpfn1,0);
