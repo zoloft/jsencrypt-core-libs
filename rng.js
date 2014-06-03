@@ -12,13 +12,13 @@ if(rng_pool == null) {
   var t;
   var getRandomValuesFunction = null;
   //We check for window existence because when loaded in a web worker we do not have access to the 'window' object
-  if (windowDefined && window.crypto && window.crypto.getRandomValues)
-    // Extract entropy (2048 bits) from RNG if available
+  if (windowDefined && window.crypto && window.crypto.getRandomValues) {
     getRandomValuesFunction = window.crypto.getRandomValues;
   } else if(crypto && crypto.getRandomValues) {
     getRandomValuesFunction = crypto.getRandomValues;
   }
 
+  // Extract entropy (2048 bits) from RNG if available
   if (getRandomValuesFunction !== null) {
     var z = new Uint32Array(256);
     getRandomValuesFunction(z);
