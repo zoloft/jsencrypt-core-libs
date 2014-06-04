@@ -3,25 +3,18 @@ var rng_state;
 var rng_pool;
 var rng_pptr;
 
-var windowDefined = typeof window != 'undefined';
+//We check for window existence because when loaded in a web worker we do not have access to the 'window' object
+var ctx = typeof window !== 'undefined' ? window : self;
 
 // Initialize the pool with junk if needed.
 if(rng_pool == null) {
   rng_pool = new Array();
   rng_pptr = 0;
   var t;
-  var getRandomValuesFunction = null;
-  //We check for window existence because when loaded in a web worker we do not have access to the 'window' object
-  if (windowDefined && window.crypto && window.crypto.getRandomValues) {
-    getRandomValuesFunction = window.crypto.getRandomValues;
-  } else if(crypto && crypto.getRandomValues) {
-    getRandomValuesFunction = crypto.getRandomValues;
-  }
-
   // Extract entropy (2048 bits) from RNG if available
-  if (getRandomValuesFunction !== null) {
+  if (ctx.crypto && ctx.crypto.getRandomValues) {
     var z = new Uint32Array(256);
-    getRandomValuesFunction(z);
+    ctx.crypto.getRandomValues(z);
     for (t = 0; t < z.length; ++t)
       rng_pool[rng_pptr++] = z[t] & 255;
   }
@@ -31,33 +24,20 @@ if(rng_pool == null) {
   var onMouseMoveListener = function(ev) {
     this.count = this.count || 0;
     if (this.count >= 256 || rng_pptr >= rng_psize) {
-      if (windowDefined) {
-        if (window.removeEventListener)
-          window.removeEventListener("mousemove", onMouseMoveListener);
-        else if (window.detachEvent)
-          window.detachEvent("onmousemove", onMouseMoveListener);
-      } else {
-        if (removeEventListener)
-          removeEventListener("mousemove", onMouseMoveListener);
-        else if (detachEvent)
-          detachEvent("onmousemove", onMouseMoveListener);
-      }
+      if (ctx.removeEventListener)
+        ctx.removeEventListener("mousemove", onMouseMoveListener);
+      else if (ctx.detachEvent)
+        ctx.detachEvent("onmousemove", onMouseMoveListener);
       return;
     }
     this.count += 1;
     var mouseCoordinates = ev.x + ev.y;
     rng_pool[rng_pptr++] = mouseCoordinates & 255;
   };
-  if (windowDefined) {
-    if (window.addEventListener)
-      window.addEventListener("mousemove", onMouseMoveListener, false);
-    else if (window.attachEvent)
-      window.attachEvent("onmousemove", onMouseMoveListener);
-  } else {
-    if (addEventListener)
-      addEventListener("mousemove", onMouseMoveListener, false);
-    else if (attachEvent)
-      attachEvent("onmousemove", onMouseMoveListener);
+  if (ctx.addEventListener)
+    ctx.addEventListener("mousemove", onMouseMoveListener, false);
+  else if (ctx.attachEvent)
+    ctx.attachEvent("onmousemove", onMouseMoveListener);
   }
 }
 
