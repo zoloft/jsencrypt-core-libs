@@ -38,7 +38,6 @@ if(rng_pool == null) {
     ctx.addEventListener("mousemove", onMouseMoveListener, false);
   else if (ctx.attachEvent)
     ctx.attachEvent("onmousemove", onMouseMoveListener);
-  }
 }
 
 function rng_get_byte() {
