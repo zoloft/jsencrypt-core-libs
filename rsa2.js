@@ -72,6 +72,9 @@ function RSAGenerate(B,E) {
       this.q = new BigInteger(qs,1,rng);
       if(this.q.subtract(BigInteger.ONE).gcd(ee).compareTo(BigInteger.ONE) == 0 && this.q.isProbablePrime(10)) break;
     }
+    var tmp_n = this.p.multiply(this.q);
+    if(tmp_n.bitLength() < B) continue;
+
     if(this.p.compareTo(this.q) <= 0) {
       var t = this.p;
       this.p = this.q;
@@ -81,7 +84,7 @@ function RSAGenerate(B,E) {
     var q1 = this.q.subtract(BigInteger.ONE);
     var phi = p1.multiply(q1);
     if(phi.gcd(ee).compareTo(BigInteger.ONE) == 0) {
-      this.n = this.p.multiply(this.q);
+      this.n = tmp_n;
       this.d = ee.modInverse(phi);
       this.dmp1 = this.d.mod(p1);
       this.dmq1 = this.d.mod(q1);
